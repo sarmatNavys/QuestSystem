@@ -2,7 +2,10 @@
 
 
 #include "QuestSubsystem.h"
+
+#include "FlowSubsystem.h"
 #include "QuestSystemPlugin.h"
+#include "Engine/World.h"
 
 void UQuestSubsystem::AddFact(const FGameplayTag& Tag, const int32 Value)
 {
@@ -51,4 +54,49 @@ int32 UQuestSubsystem::GetFactValue(const FGameplayTag& Tag) const
 	}
 
 	return Facts[Tag];
+}
+
+void UQuestSubsystem::AddQuest(const FGameplayTag& Tag, UQuestFlowAsset* Quest)
+{
+	UFlowSubsystem* FlowSubsystem = GetWorld()->GetGameInstance()->GetSubsystem<UFlowSubsystem>();
+	
+	if (DoesQuestExist(Tag))
+	{
+		UE_LOG(LogQuestSystemPlugin, Warning, TEXT("Quest %s already exist in database."), *Tag.ToString());
+		return;
+	}
+
+	Quests.Add(Tag, Quest);
+	FlowSubsystem->StartRootFlow(Quest, Quest);
+	OnQuestAdded.Broadcast(Tag);
+}
+
+void UQuestSubsystem::UpdateQuestStep(const FGameplayTag& Tag, const FQuestStep& NewStep)
+{
+	if (!DoesQuestExist(Tag))
+	{
+		UE_LOG(LogQuestSystemPlugin, Warning, TEXT("Can't update quest step. Quest %s does not exist in database"), *Tag.ToString());
+		return;
+	}
+
+	Quests[Tag]->CurrentStep = NewStep;
+	OnQuestStepUpdated.Broadcast(Tag, NewStep);
+}
+
+void UQuestSubsystem::CompleteQuest(const FGameplayTag& Tag, EQuestStatus CompleteStatus)
+{
+	if (!DoesQuestExist(Tag))
+	{
+		UE_LOG(LogQuestSystemPlugin, Warning, TEXT("Can't complete quest. Quest %s does not exist in database"), *Tag.ToString());
+		return;
+	}
+
+	Quests[Tag]->QuestStatus = CompleteStatus;
+	Quests[Tag]->FinishFlow(EFlowFinishPolicy::Abort);
+	OnQuestCompleted.Broadcast(Tag, CompleteStatus);
+}
+
+bool UQuestSubsystem::DoesQuestExist(const FGameplayTag& Tag) const
+{
+	return Quests.Contains(Tag);
 }
