@@ -15,7 +15,7 @@ enum class EQuestStatus : uint8
 };
 
 /** Contains Quest Step Information. */
-USTRUCT(BlueprintType)
+USTRUCT(BlueprintType, Blueprintable)
 struct FQuestStep
 {
 	GENERATED_BODY()

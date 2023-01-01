@@ -67,6 +67,10 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Quest System")
 	void CompleteQuest(const FGameplayTag& Tag, EQuestStatus CompleteStatus);
 
+	/** Returns quest from database. */
+	UFUNCTION(BlueprintPure, Category = "Quest System")
+	UQuestFlowAsset* GetQuest(const FGameplayTag& Tag) const;
+
 	/** Checks, does quest valid and exist in database. */
 	UFUNCTION(BlueprintCallable, Category = "Quest System")
 	bool DoesQuestExist(const FGameplayTag& Tag) const;

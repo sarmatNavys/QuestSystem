@@ -9,7 +9,7 @@ public class QuestSystemEditor : ModuleRules
         PublicDependencyModuleNames.AddRange(
             new string[]
             {
-                "Core",
+                "Core", "UnrealEd"
             }
         );
 
@@ -19,7 +19,9 @@ public class QuestSystemEditor : ModuleRules
                 "CoreUObject",
                 "Engine",
                 "Slate",
-                "SlateCore"
+                "SlateCore", 
+                "QuestSystemPlugin",
+                "FlowEditor"
             }
         );
     }

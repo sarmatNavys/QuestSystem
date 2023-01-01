@@ -16,6 +16,7 @@ void UQuestSubsystem::AddFact(const FGameplayTag& Tag, const int32 Value)
 	}
 	
 	Facts.Add(Tag, Value);
+	OnFactAdded.Broadcast(Tag);
 }
 
 void UQuestSubsystem::IncrementFact(const FGameplayTag& Tag, const int32 Value)
@@ -27,6 +28,7 @@ void UQuestSubsystem::IncrementFact(const FGameplayTag& Tag, const int32 Value)
 	}
 
 	Facts[Tag] += Value;
+	OnFactValueChanged.Broadcast(Tag, Facts[Tag]);
 }
 
 void UQuestSubsystem::RemoveFact(const FGameplayTag& Tag)
@@ -38,6 +40,7 @@ void UQuestSubsystem::RemoveFact(const FGameplayTag& Tag)
 	}
 
 	Facts.Remove(Tag);
+	OnFactRemoved.Broadcast(Tag);
 }
 
 bool UQuestSubsystem::DoesFactExist(const FGameplayTag& Tag) const
@@ -94,6 +97,11 @@ void UQuestSubsystem::CompleteQuest(const FGameplayTag& Tag, EQuestStatus Comple
 	Quests[Tag]->QuestStatus = CompleteStatus;
 	Quests[Tag]->FinishFlow(EFlowFinishPolicy::Abort);
 	OnQuestCompleted.Broadcast(Tag, CompleteStatus);
+}
+
+UQuestFlowAsset* UQuestSubsystem::GetQuest(const FGameplayTag& Tag) const
+{
+	return Quests[Tag];
 }
 
 bool UQuestSubsystem::DoesQuestExist(const FGameplayTag& Tag) const
