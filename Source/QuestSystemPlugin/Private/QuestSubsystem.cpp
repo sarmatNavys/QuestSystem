@@ -94,9 +94,9 @@ void UQuestSubsystem::CompleteQuest(const FGameplayTag& Tag, EQuestStatus Comple
 		return;
 	}
 
-	Quests[Tag]->QuestStatus = CompleteStatus;
-	Quests[Tag]->FinishFlow(EFlowFinishPolicy::Abort);
 	OnQuestCompleted.Broadcast(Tag, CompleteStatus);
+	Quests[Tag]->QuestStatus = CompleteStatus;
+	GetWorld()->GetGameInstance()->GetSubsystem<UFlowSubsystem>()->FinishRootFlow(Quests[Tag], EFlowFinishPolicy::Abort);
 }
 
 UQuestFlowAsset* UQuestSubsystem::GetQuest(const FGameplayTag& Tag) const
